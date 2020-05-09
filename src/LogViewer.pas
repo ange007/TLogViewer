@@ -163,8 +163,7 @@ implementation
 uses
   FMX.Styles;
 
-{$R TLogViewer.res}
-{$R TLogViewer.dres}
+{$R *.res}
 
 const
   CRLF = #13#10;
