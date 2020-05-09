@@ -1,5 +1,5 @@
 object TLayout
-  StyleName = 'LogMemoStyle'
+  StyleName = 'LogViewerStyle'
   Size.Width = 320.000000000000000000
   Size.Height = 240.000000000000000000
   Size.PlatformDefault = False
@@ -7,7 +7,7 @@ object TLayout
   HitTest = True
 
   object TFramedVertScrollBox
-    StyleName = 'LogMemoScrollBox'
+    StyleName = 'LogViewerScrollBox'
     Align = Client
     Size.Width = 320.000000000000000000
     Size.Height = 240.000000000000000000
@@ -16,7 +16,7 @@ object TLayout
   end
 
   object TText
-    StyleName = 'LogMemoText'
+    StyleName = 'LogViewerText'
     Align = Top
     Size.Width = 320.000000000000000000
     Size.Height = 60.000000000000000000

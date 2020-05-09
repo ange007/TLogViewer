@@ -281,7 +281,7 @@ end;
 
 function TLogViewer.GetDefaultStyleLookupName: string;
 begin
-  Result := 'LogMemoStyle';
+  Result := 'LogViewerStyle';
 end;
 
 procedure TLogViewer.ApplyStyle;
@@ -289,14 +289,14 @@ begin
   inherited ApplyStyle;
 
   {}
-  if FindStyleResource<TFramedVertScrollBox>('LogMemoScrollBox', FScrollBox) then
+  if FindStyleResource<TFramedVertScrollBox>('LogViewerScrollBox', FScrollBox) then
   begin
     FScrollBox.AniCalculations.Animation := False;
     FScrollBox.CanFocus := False;
   end;
 
   {}
-  if FindStyleResource<TText>('LogMemoText', FTextLayout) then
+  if FindStyleResource<TText>('LogViewerText', FTextLayout) then
   begin
     FTextLayout.Parent := FScrollBox;
     FTextLayout.CanFocus := True;
