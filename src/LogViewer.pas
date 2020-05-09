@@ -3,8 +3,10 @@ unit LogViewer;
 {
   FMX Component
 
-  Original idea: Nick Peterson (http://fire-monkey.ru/profile/5417-nick-peterson/)
-                                (http://fire-monkey.ru/topic/5426-tmemo-%D0%B4%D0%BB%D1%8F-%D0%B2%D1%8B%D0%B2%D0%BE%D0%B4%D0%B0-%D0%BB%D0%BE%D0%B3%D0%B0-%D1%82%D0%BE%D1%80%D0%BC%D0%BE%D0%B7%D0%B8%D1%82)
+  Original idea:
+    http://fire-monkey.ru/topic/5426-tmemo-%D0%B4%D0%BB%D1%8F-%D0%B2%D1%8B%D0%B2%D0%BE%D0%B4%D0%B0-%D0%BB%D0%BE%D0%B3%D0%B0-%D1%82%D0%BE%D1%80%D0%BC%D0%BE%D0%B7%D0%B8%D1%82
+    Nick Peterson (http://fire-monkey.ru/profile/5417-nick-peterson/)
+    slav_z (http://fire-monkey.ru/profile/4697-slav_z/)
 
   Component Author: Vladimir B. (https://github.com/ange007/Delphi.FMX.TLogViewer)
   Version: 1.0
