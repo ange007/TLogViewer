@@ -10,17 +10,18 @@ uses
 
 type
   TForm1 = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
-    Button5: TButton;
+    btn_add_many_lines: TButton;
+    btn_add_line: TButton;
+    btn_clear: TButton;
+    btn_copy: TButton;
+    btn_add_random_lines: TButton;
     lgm1: TLogViewer;
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    lyt2: TLayout;
+    procedure btn_add_lineClick(Sender: TObject);
+    procedure btn_clearClick(Sender: TObject);
+    procedure btn_copyClick(Sender: TObject);
+    procedure btn_add_random_linesClick(Sender: TObject);
+    procedure btn_add_many_linesClick(Sender: TObject);
   private
   public
     { Public declarations }
@@ -33,7 +34,7 @@ implementation
 
 {$R *.fmx}
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.btn_add_many_linesClick(Sender: TObject);
 var
   i: Integer;
 begin
@@ -45,22 +46,22 @@ begin
   end;
 end;
 
-procedure TForm1.Button2Click(Sender: TObject);
+procedure TForm1.btn_add_lineClick(Sender: TObject);
 begin
-  lgm1.Add('Check on GitHub', 'https://github.com');
+  lgm1.Add('Check on GitHub', 'https://github.com/ange007/TLogViewer');
 end;
 
-procedure TForm1.Button3Click(Sender: TObject);
+procedure TForm1.btn_clearClick(Sender: TObject);
 begin
   lgm1.Clear;
 end;
 
-procedure TForm1.Button4Click(Sender: TObject);
+procedure TForm1.btn_copyClick(Sender: TObject);
 begin
   lgm1.CopyToClipboard;
 end;
 
-procedure TForm1.Button5Click(Sender: TObject);
+procedure TForm1.btn_add_random_linesClick(Sender: TObject);
 var
   i: Integer;
   Color: TAlphaColorRec;
@@ -83,7 +84,15 @@ begin
         else Styles := [];
       end;
 
-      lgm1.Add('Item ' + i.ToString, '', TAlphaColor(Color), Styles);
+      {Long line}
+      if Random(5) = 3 then lgm1.Add('Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long '
+                                      + 'Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long '
+                                      + 'Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long', '', TAlphaColor(Color), Styles)
+      {Line wrap}
+      else if Random(5) = 2 then lgm1.Add('1. Wrap Line'
+                                          + #13#10 + '2. Wrap Line', '', TAlphaColor(Color), Styles)
+      {Standart Line}
+      else lgm1.Add('Item ' + i.ToString, '', TAlphaColor(Color), Styles);
     end;
   finally
     lgm1.EndUpdate;

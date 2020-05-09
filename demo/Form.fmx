@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Form1'
+  Caption = 'TLogViewer'
   ClientHeight = 480
   ClientWidth = 640
   FormFactor.Width = 320
@@ -10,73 +10,95 @@ object Form1: TForm1
   DesignerMasterStyle = 0
   object lyt1: TLayout
     Align = Bottom
+    Padding.Left = 5.000000000000000000
+    Padding.Top = 5.000000000000000000
+    Padding.Right = 5.000000000000000000
+    Padding.Bottom = 5.000000000000000000
     Position.Y = 440.000000000000000000
     Size.Width = 640.000000000000000000
     Size.Height = 40.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
-    object Button1: TButton
+    object btn_add_many_lines: TButton
       Align = Right
-      Position.X = 537.000000000000000000
+      Margins.Left = 5.000000000000000000
+      Position.X = 532.000000000000000000
+      Position.Y = 5.000000000000000000
       Size.Width = 103.000000000000000000
-      Size.Height = 40.000000000000000000
+      Size.Height = 30.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       Text = '+100000 lines'
-      OnClick = Button1Click
+      OnClick = btn_add_many_linesClick
     end
-    object Button2: TButton
+    object btn_add_line: TButton
       Align = Right
-      Position.X = 312.000000000000000000
+      Position.X = 297.000000000000000000
+      Position.Y = 5.000000000000000000
       Size.Width = 80.000000000000000000
-      Size.Height = 40.000000000000000000
+      Size.Height = 30.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
       Text = '+1 line'
-      OnClick = Button2Click
+      OnClick = btn_add_lineClick
     end
-    object Button3: TButton
+    object btn_clear: TButton
       Align = Left
-      Position.X = 82.000000000000000000
+      Margins.Left = 5.000000000000000000
+      Position.X = 92.000000000000000000
+      Position.Y = 5.000000000000000000
       Size.Width = 80.000000000000000000
-      Size.Height = 40.000000000000000000
+      Size.Height = 30.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 2
       Text = 'Clear'
-      OnClick = Button3Click
+      OnClick = btn_clearClick
     end
-    object Button4: TButton
+    object btn_copy: TButton
       Align = Left
+      Position.X = 5.000000000000000000
+      Position.Y = 5.000000000000000000
       Size.Width = 82.000000000000000000
-      Size.Height = 40.000000000000000000
+      Size.Height = 30.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 3
       Text = 'Copy'
-      OnClick = Button4Click
+      OnClick = btn_copyClick
     end
-    object Button5: TButton
+    object btn_add_random_lines: TButton
       Align = Right
-      Position.X = 392.000000000000000000
+      Margins.Left = 5.000000000000000000
+      Position.X = 382.000000000000000000
+      Position.Y = 5.000000000000000000
       Size.Width = 145.000000000000000000
-      Size.Height = 40.000000000000000000
+      Size.Height = 30.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 4
       Text = '+5000 random lines'
-      OnClick = Button5Click
+      OnClick = btn_add_random_linesClick
     end
   end
-  object lgm1: TLogViewer
+  object lyt2: TLayout
     Align = Client
     Size.Width = 640.000000000000000000
     Size.Height = 440.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 4
-    ItemIndex = -1
-    ToItemIndex = -1
-    ItemHeight = 20.000000000000000000
-    ItemIndexColor = claSilver
-    ReleasedItems = True
-    MaxCount = 20000
-    ReleaseCount = 15000
+    object lgm1: TLogViewer
+      Align = Client
+      ClipParent = True
+      Size.Width = 640.000000000000000000
+      Size.Height = 440.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      ItemIndex = -1
+      ToItemIndex = -1
+      ItemHeight = 20.000000000000000000
+      ItemIndexColor = claSilver
+      LineLength = 150
+      ReleasedItems = True
+      MaxCount = 20000
+      ReleaseCount = 15000
+    end
   end
 end

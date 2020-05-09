@@ -8,16 +8,16 @@ unit LogViewer;
     Nick Peterson (http://fire-monkey.ru/profile/5417-nick-peterson/)
     slav_z (http://fire-monkey.ru/profile/4697-slav_z/)
 
-  Component Author: Vladimir B. (https://github.com/ange007/Delphi.FMX.TLogViewer)
-  Version: 1.0
+  Component Author: Vladimir B. (https://github.com/ange007/TLogViewer)
+  Version: 1.0.5
 }
 
 interface
 
 uses
   System.SysUtils, System.Types, System.UITypes, System.UIConsts, System.Classes,
-  System.Math, System.Threading, FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms,
-  FMX.Objects, FMX.Layouts, FMX.platform, FMX.Text,
+  System.Math, System.RTTI, System.Threading, FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms,
+  FMX.Objects, FMX.Layouts, FMX.platform, FMX.Text, FMX.TextLayout,
   FMX.Menus,
 
   {$IF DEFINED(LINUX) or DEFINED(MACOS)}
@@ -44,42 +44,6 @@ type
     FActionsMenu: TPopupMenu;
     FMouseIsDown: Boolean;
     {}
-    procedure OnTextKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
-    procedure OnTextKeyUp(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
-    procedure OnTextPainting(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
-    procedure OnTextMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-    procedure OnTextMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
-    procedure OnTextMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-    procedure OnTextMouseLeave(Sender: TObject);
-    procedure OnTextMouseDblClick(Sender: TObject);
-    {}
-    procedure OnTextActionCopyClick(Sender: TObject);
-    procedure OnTextActionSelectAllClick(Sender: TObject);
-  protected
-    FItems: array of PLogItem;
-    FItemHeight: Single;
-    FItemIndex: Integer;
-    FToItemIndex: Integer;
-    FItemIndexColor: TAlphaColor;
-    FOnChange: TNotifyEvent;
-    FReleasedItems: Boolean;
-    FAniCalculationsStarting: Boolean;
-    FSelectTimer: TTimer;
-    FMovingDirection: Integer;
-    FMaxCount: Integer;
-    FReleaseCount: Integer;
-    FAutoScroll: Boolean;
-    {}
-    function GetDefaultStyleLookupName: string; override;
-    function GetStyleObject: TFmxObject; override;
-    procedure ApplyStyle; override;
-    procedure FreeStyle; override;
-    {Menu}
-    procedure CreateDefaultMenu;
-    function ShowContextMenu(const ScreenPosition: TPointF): Boolean; override;
-    {}
-    procedure Paint; override;
-    procedure DoEndUpdate; override;
     procedure DoChange;
     procedure DoTextChange;
     procedure RepaintItems(const OldItemIndex, OldToItemIndex: Integer);
@@ -97,6 +61,45 @@ type
     {}
     procedure ExtendSelection(Y: Single);
     procedure DoSelectTimer(Sender: TObject);
+    {}
+    procedure CreateDefaultMenu;
+    {}
+    procedure OnTextKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
+    procedure OnTextKeyUp(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
+    procedure OnTextPainting(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
+    procedure OnTextMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+    procedure OnTextMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
+    procedure OnTextMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+    procedure OnTextMouseLeave(Sender: TObject);
+    procedure OnTextMouseDblClick(Sender: TObject);
+    {}
+    procedure OnTextActionCopyClick(Sender: TObject);
+    procedure OnTextActionSelectAllClick(Sender: TObject);
+  protected
+    FItems: array of PLogItem;
+    FItemHeight: Single;
+    FItemIndex: Integer;
+    FToItemIndex: Integer;
+    FLineLength: Integer;
+    FItemIndexColor: TAlphaColor;
+    FReleasedItems: Boolean;
+    FAniCalculationsStarting: Boolean;
+    FSelectTimer: TTimer;
+    FMovingDirection: Integer;
+    FMaxCount: Integer;
+    FReleaseCount: Integer;
+    FAutoScroll: Boolean;
+    FOnChange: TNotifyEvent;
+    {}
+    function GetDefaultStyleLookupName: string; override;
+    function GetStyleObject: TFmxObject; override;
+    procedure ApplyStyle; override;
+    procedure FreeStyle; override;
+    {Menu}
+    function ShowContextMenu(const ScreenPosition: TPointF): Boolean; override;
+    {}
+    procedure Paint; override;
+    procedure DoEndUpdate; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -143,6 +146,7 @@ type
     property ToItemIndex: Integer read FToItemIndex write SetToItemIndex;
     property ItemHeight: Single read FItemHeight write SetItemHeight;
     property ItemIndexColor: TAlphaColor read FItemIndexColor write FItemIndexColor;
+    property LineLength: Integer read FLineLength write FLineLength;
     {}
     property AutoScroll: Boolean read FAutoScroll write FAutoScroll default True;
     property ReleasedItems: Boolean read FReleasedItems write FReleasedItems;
@@ -214,11 +218,13 @@ begin
   Width := 320;
   Height := 240;
   Size.PlatformDefault := False;
+
+  {Block Insert Controls}
   SetAcceptsControls(False);
-  CanFocus := True;
-  AutoCapture := True;
-  Stored := True;
-  Locked := True;
+  //CanFocus := True;
+  //AutoCapture := True;
+  //Stored := True;
+  //Locked := True;
 
   {}
   FMouseIsDown := False;
@@ -232,12 +238,13 @@ begin
   FItemIndexColor := claSilver;
   FMaxCount := 20000;
   FReleaseCount := 15000;
+  FLineLength := 150;
 
-  {Draw Thread}
+  {First ItemHeight check}
   TThread.CreateAnonymousThread(procedure
   begin
     Sleep(10);
-    TThread.Queue(nil, procedure begin FItemHeight := Round(Canvas.TextHeight('A') + 4); end);
+    FItemHeight := Round(Canvas.TextHeight('A') + 4);
   end)
   .Start;
 
@@ -424,44 +431,44 @@ begin
   for S in FItems do AddToList(Result, CRLF, S.Msg);
 end;
 
-procedure TLogViewer.RepaintItems(const OldItemIndex, OldToItemIndex: Integer);
+procedure TLogViewer.RepaintItems(const oldItemIndex, oldToItemIndex: Integer);
 var
   ARect: TRectF;
 begin
   ARect := FTextLayout.AbsoluteRect;
-  ARect.Bottom := ARect.Top + MaxIntValue([OldItemIndex, OldToItemIndex, ItemIndex, ToItemIndex]) * (FItemHeight * 2);
-  ARect.Top := ARect.Top + MinIntValue([OldItemIndex, OldToItemIndex, ItemIndex, ToItemIndex]) * FItemHeight;
+  ARect.Bottom := ARect.Top + MaxIntValue([oldItemIndex, oldToItemIndex, ItemIndex, ToItemIndex]) * (FItemHeight * 2);
+  ARect.Top := ARect.Top + MinIntValue([oldItemIndex, oldToItemIndex, ItemIndex, ToItemIndex]) * FItemHeight;
 
   TAccessControl(FTextLayout).RepaintRect(ARect);
 end;
 
 procedure TLogViewer.SetItemIndex(Value: Integer);
 var
-  OldItemIndex, OldToItemIndex: Integer;
+  oldItemIndex, oldToItemIndex: Integer;
 begin
   if (FItemIndex <> Value) or (ToItemIndex <> Value) then
   begin
-    OldItemIndex := FItemIndex;
-    OldToItemIndex := FToItemIndex;
+    oldItemIndex := FItemIndex;
+    oldToItemIndex := FToItemIndex;
 
     FItemIndex := Value;
     FToItemIndex := Value;
 
-    RepaintItems(OldItemIndex, OldToItemIndex);
+    RepaintItems(oldItemIndex, oldToItemIndex);
     DoChange;
   end;
 end;
 
 procedure TLogViewer.SetToItemIndex(Value: Integer);
 var
-  OldToItemIndex: Integer;
+  oldToItemIndex: Integer;
 begin
   if FToItemIndex = Value then Exit;
 
-  OldToItemIndex := FToItemIndex;
+  oldToItemIndex := FToItemIndex;
   FToItemIndex := Value;
 
-  RepaintItems(ItemIndex, OldToItemIndex);
+  RepaintItems(ItemIndex, oldToItemIndex);
   DoChange;
 end;
 
@@ -502,6 +509,7 @@ end;
 
 procedure TLogViewer.Add(const AText: string; AURL: string = ''; const AColor: TAlphaColor = claNull; const AStyle: TFontStyles = []);
 var
+  msg: string;
   logItem: PLogItem;
 begin
   if FReleasedItems then
@@ -509,13 +517,16 @@ begin
     if Count > FMaxCount then Delete(FItems, 0, FReleaseCount);
   end;
 
-  New(logItem);
-  logItem.Msg := AText;
-  logItem.URL := AURL;
-  logItem.Color := AColor;
-  logItem.Style := AStyle;
+  for msg in AText.Split([CRLF]) do
+  begin
+    New(logItem);
+    logItem.Msg := msg;
+    logItem.URL := AURL;
+    logItem.Color := AColor;
+    logItem.Style := AStyle;
 
-  FItems := FItems + [logItem];
+    FItems := FItems + [logItem];
+  end;
 
   if not (IsUpdating) then DoTextChange;
 end;
@@ -552,13 +563,13 @@ end;
 
 procedure TLogViewer.ExtendSelection(Y: Single);
 var
-  NewItemIndex: Integer;
+  newItemIndex: Integer;
 begin
   Y := Max(Y, FScrollBox.ViewportPosition.Y);
   Y := Min(Y, FScrollBox.ViewportPosition.Y + FScrollBox.Height);
 
-  NewItemIndex := Trunc(Y / FItemHeight);
-  if InRange(NewItemIndex, 0, Count - 1) then ToItemIndex := NewItemIndex;
+  newItemIndex := Trunc(Y / FItemHeight);
+  if InRange(newItemIndex, 0, Count - 1) then ToItemIndex := newItemIndex;
 end;
 
 procedure TLogViewer.DoSelectTimer(Sender: TObject);
@@ -575,27 +586,27 @@ end;
 
 procedure TLogViewer.OnTextKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
 var
-  NewItemIndex: Integer;
+  newItemIndex: Integer;
 begin
   if Key in [vkUp, vkDown] then
   begin
-    NewItemIndex := ItemIndex;
+    newItemIndex := ItemIndex;
 
     if Key = vkUp then
     begin
-      NewItemIndex := ItemIndex - 1;
+      newItemIndex := ItemIndex - 1;
       FMovingDirection := 1;
     end
     else if Key = vkDown then
     begin
-      NewItemIndex := ItemIndex + 1;
+      newItemIndex := ItemIndex + 1;
       FMovingDirection := -1;
     end
     else FMovingDirection := 0;
 
-    if InRange(NewItemIndex, 0, Count - 1) then
+    if InRange(newItemIndex, 0, Count - 1) then
     begin
-      ItemIndex := NewItemIndex;
+      ItemIndex := newItemIndex;
       FScrollBox.ScrollBy(0, FMovingDirection * FItemHeight);
     end;
 
@@ -614,17 +625,17 @@ end;
 
 procedure TLogViewer.OnTextMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 var
-  NewItemIndex: Integer;
+  newItemIndex: Integer;
 begin
   if Button = TMouseButton.mbLeft then
   begin
     FMouseIsDown := True;
-    NewItemIndex := Trunc(Y / FItemHeight);
+    newItemIndex := Trunc(Y / FItemHeight);
 
-    if InRange(NewItemIndex, 0, Count - 1) then
+    if InRange(newItemIndex, 0, Count - 1) then
     begin
-       if (ssShift in Shift) then ToItemIndex := NewItemIndex
-       else ItemIndex := NewItemIndex;
+       if (ssShift in Shift) then ToItemIndex := newItemIndex
+       else ItemIndex := newItemIndex;
     end;
   end;
 end;
@@ -673,37 +684,51 @@ end;
 procedure TLogViewer.OnTextPainting(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
 var
   i: Integer;
-  TextRect, ControlRect: TRectF;
+  msg: string;
+  textRect, controlRect: TRectF;
 begin
   Canvas.Fill.Kind := TBrushKind.Solid;
   Canvas.Font.Assign(FTextLayout.Font);
 
-  TextRect := ARect;
-  TextRect.Height := FItemHeight;
+  textRect := ARect;
+  textRect.Height := FItemHeight;
 
-  ControlRect := ARect;
-  ControlRect.Top := FScrollBox.ViewportPosition.Y;
-  ControlRect.Height := FScrollBox.Height;
+  controlRect := ARect;
+  controlRect.Top := FScrollBox.ViewportPosition.Y;
+  controlRect.Height := FScrollBox.Height;
 
   {Draw Items}
   for i := 0 to Count - 1 do
   begin
-    if ControlRect.IntersectsWith(TextRect) then
+    {Draw Text Line}
+    if controlRect.IntersectsWith(textRect) then
     begin
+      {Background}
       Canvas.Fill.Color := ItemIndexColor;
       if InRange(i, ItemIndex, ToItemIndex)
-        or InRange(i, ToItemIndex, ItemIndex) then Canvas.FillRect(TextRect, 0, 0, AllCorners, FTextLayout.Opacity);
+        or InRange(i, ToItemIndex, ItemIndex) then Canvas.FillRect(textRect, 0, 0, AllCorners, FTextLayout.Opacity);
 
+      {Color}
       if FItems[i].Color <> claNull then Canvas.Fill.Color := FItems[i].Color
       else Canvas.Fill.Color := FTextLayout.TextSettings.FontColor;
 
+      {Style}
       if FItems[i].Style <> [] then Canvas.Font.Style := FItems[i].Style
       else Canvas.Font.Style := FTextLayout.TextSettings.Font.Style;
 
-      Canvas.FillText(TextRect, FItems[i].Msg, False, FTextLayout.Opacity, [], FTextLayout.TextSettings.HorzAlign, FTextLayout.TextSettings.VertAlign);
+      {Cropp string}
+      msg := FItems[i].Msg;
+      if Length(msg) > FLineLength then
+      begin
+        Delete(msg, FLineLength, Length(msg));
+        msg := msg + '...';
+      end;
+
+      {Write Text}
+      Canvas.FillText(textRect, msg, False, FTextLayout.Opacity, [], FTextLayout.TextSettings.HorzAlign, FTextLayout.TextSettings.VertAlign);
     end;
 
-    TextRect.Offset(0, TextRect.Height);
+    textRect.Offset(0, textRect.Height);
   end;
 end;
 
