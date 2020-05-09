@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{C2598AB8-19CC-4446-8E6B-19797C8C885B}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Demo\TLogViewerDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="src\TLogViewer.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="TLogViewerDemo">
+        <MSBuild Projects="Demo\TLogViewerDemo.dproj"/>
+    </Target>
+    <Target Name="TLogViewerDemo:Clean">
+        <MSBuild Projects="Demo\TLogViewerDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TLogViewerDemo:Make">
+        <MSBuild Projects="Demo\TLogViewerDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TLogViewer">
+        <MSBuild Projects="src\TLogViewer.dproj"/>
+    </Target>
+    <Target Name="TLogViewer:Clean">
+        <MSBuild Projects="src\TLogViewer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TLogViewer:Make">
+        <MSBuild Projects="src\TLogViewer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="TLogViewerDemo;TLogViewer"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="TLogViewerDemo:Clean;TLogViewer:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="TLogViewerDemo:Make;TLogViewer:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

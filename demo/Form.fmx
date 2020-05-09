@@ -1,0 +1,82 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object lyt1: TLayout
+    Align = Bottom
+    Position.Y = 440.000000000000000000
+    Size.Width = 640.000000000000000000
+    Size.Height = 40.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object Button1: TButton
+      Align = Right
+      Position.X = 537.000000000000000000
+      Size.Width = 103.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = '+100000 lines'
+      OnClick = Button1Click
+    end
+    object Button2: TButton
+      Align = Right
+      Position.X = 312.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = '+1 line'
+      OnClick = Button2Click
+    end
+    object Button3: TButton
+      Align = Left
+      Position.X = 82.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Clear'
+      OnClick = Button3Click
+    end
+    object Button4: TButton
+      Align = Left
+      Size.Width = 82.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Text = 'Copy'
+      OnClick = Button4Click
+    end
+    object Button5: TButton
+      Align = Right
+      Position.X = 392.000000000000000000
+      Size.Width = 145.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
+      Text = '+5000 random lines'
+      OnClick = Button5Click
+    end
+  end
+  object lgm1: TLogViewer
+    Align = Client
+    Size.Width = 640.000000000000000000
+    Size.Height = 440.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    ItemIndex = -1
+    ToItemIndex = -1
+    ItemHeight = 20.000000000000000000
+    ItemIndexColor = claSilver
+    ReleasedItems = True
+    MaxCount = 20000
+    ReleaseCount = 15000
+  end
+end

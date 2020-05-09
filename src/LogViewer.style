@@ -1,0 +1,31 @@
+object TLayout
+  StyleName = 'LogMemoStyle'
+  Size.Width = 320.000000000000000000
+  Size.Height = 240.000000000000000000
+  Size.PlatformDefault = False
+  TabOrder = 0
+  HitTest = True
+
+  object TFramedVertScrollBox
+    StyleName = 'LogMemoScrollBox'
+    Align = Client
+    Size.Width = 320.000000000000000000
+    Size.Height = 240.000000000000000000
+    Size.PlatformDefault = False
+    HitTest = True
+  end
+
+  object TText
+    StyleName = 'LogMemoText'
+    Align = Top
+    Size.Width = 320.000000000000000000
+    Size.Height = 60.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Size = 14.000000000000000000
+    TextSettings.WordWrap = False
+    TextSettings.HorzAlign = Leading
+    TextSettings.VertAlign = Leading
+    HitTest = True
+  end
+end
+
